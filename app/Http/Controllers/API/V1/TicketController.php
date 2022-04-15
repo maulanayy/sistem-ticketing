@@ -16,7 +16,7 @@ class TicketController extends BaseController
      */
     public function __construct()
     {
-        $this->middleware('auth:api',['except' => ['printQR']]);
+        $this->middleware('auth:api',['except' => ['detailGroup','printQR']]);
     }
 
     /**
@@ -109,6 +109,18 @@ class TicketController extends BaseController
             ->first();
 
         return view('qrCode',[
+            'ticket' => $ticket
+        ]);
+    }
+
+    public function detailGroup($id)
+    {
+        $ticket = Transaction::where('ticket_code',$id)
+            ->select(['ticket_code','amount','amount_scanned','nama_customer','created_at'])
+            ->first();
+
+        // return response()->json($ticket);
+        return view('detailGroup',[
             'ticket' => $ticket
         ]);
     }

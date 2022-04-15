@@ -20,7 +20,7 @@ class TransactionController extends BaseController
      */
     public function __construct()
     {
-        $this->middleware('auth:api',['except' => ['exportExcel','checkTicket']]);
+        $this->middleware('auth:api',['except' => ['exportExcel','checkIndividualTicket','checkGroupTicket']]);
     }
 
     /**
@@ -59,6 +59,7 @@ class TransactionController extends BaseController
             'nama_customer' => $request['name'],
             'ticket_code' => $ticketCode,
             'amount' => $request['amount'],
+            'tipe' => $request['type'],
             'status' => 'open',
             'amount_scanned' => 0,
             'harga_ticket' => $request['harga_ticket'],
@@ -118,9 +119,17 @@ class TransactionController extends BaseController
         return Excel::download(new TransactionExport, 'transaction.xlsx');
     }
 
-    public function checkTicket($ticket) {
+    public function checkIndividualTicket($ticket) {
 
-        $transScanned = Transaction::where('ticket_code',$ticket)->select(['amount','amount_scanned','status'])->first();
+        $transScanned = Transaction::where('ticket_code',$ticket)->
+            where('tipe','individu')
+            ->select(['amount','amount_scanned','status'])->first();
+
+        if (!$transScanned){
+            return response()->json([
+                "status" => "not found"
+            ]);
+        }
 
         if ($transScanned->status == "closed") {
             return response()->json([
@@ -143,7 +152,48 @@ class TransactionController extends BaseController
         } 
 
         return response()->json([
-            "status" => $transScanned->status
+            "status" => $transScanned->status,
+            "count" => $transScanned->amount-$counting
+        ]);
+    }
+
+    public function checkGroupTicket($ticket) {
+
+        $transScanned = Transaction::where('ticket_code',$ticket)->
+            where('tipe','group')
+            ->select(['amount','amount_scanned','status'])->first();
+
+        $counting = $transScanned->amount_scanned + 1;
+        if (!$transScanned){
+            return response()->json([
+                "status" => "not found"
+            ]);
+        }
+
+        if ($transScanned->status == "closed") {
+            return response()->json([
+                "status" => $transScanned->status,
+                "count" => 0
+            ]);
+        }
+
+       
+        if ($transScanned->amount == $counting) {
+            Transaction::where('ticket_code',$ticket)
+                ->update([
+                    "status" => "closed",
+                    "amount_scanned" => $counting
+                ]);
+        }else{
+            Transaction::where('ticket_code',$ticket)
+                ->update([
+                    "amount_scanned" => $counting
+                ]);
+        } 
+
+        return response()->json([
+            "status" => $transScanned->status,
+            "count" => $transScanned->amount-$counting
         ]);
     }
 }

@@ -18,7 +18,7 @@ Auth::routes(['verify' => true]);
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('home', function () {
-    return redirect('/dashboard');
+    return redirect('/transaction');
 });
 
 Route::get('/{vue_capture?}', function () {

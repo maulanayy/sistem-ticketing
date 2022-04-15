@@ -49,7 +49,7 @@
                                         <td>{{transaction.harga_ticket}}</td>
                                         <td>{{transaction.created_by}}</td>
                                         <td>
-                                            <a href="#" @click="print(transaction)">
+                                            <a :href="'/api/ticket/'+transaction.id+'/printQR'" >
                                                 <i class="fa fa-print blue"></i>
                                             </a>
                                         </td>
@@ -223,7 +223,7 @@
                 })
                 this.form.harga_ticket = this.form.amount * ticket.harga
             }
-        },
+        },  
         mounted() {
             console.log('Transaction Component mounted.')
         },
