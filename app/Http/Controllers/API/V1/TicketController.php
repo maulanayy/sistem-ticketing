@@ -116,6 +116,7 @@ class TicketController extends BaseController
     public function detailGroup($id)
     {
         $ticket = Transaction::where('ticket_code',$id)
+            ->where('tipe','group')
             ->select(['ticket_code','amount','amount_scanned','nama_customer','created_at'])
             ->first();
 

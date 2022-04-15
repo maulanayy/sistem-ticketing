@@ -53,8 +53,12 @@ class TransactionController extends BaseController
 
         $timestamp = Carbon::now()->timestamp;
         $user = User::where('id',Auth::id())->select(['name'])->first() ;
-        
-        $ticketCode = "TKT-".$timestamp;
+        $tipe = "IDV";
+        $code = substr($request['name'],1,1).substr($request['name'],strlen($request['name'])-1,1);
+        if ($request['type'] == "group") {
+            $tipe = "GRP";
+        }
+        $ticketCode = strtoupper("TKT-".$tipe.$timestamp.$code);
         $transaction = Transaction::create([
             'nama_customer' => $request['name'],
             'ticket_code' => $ticketCode,
@@ -122,7 +126,7 @@ class TransactionController extends BaseController
     public function checkIndividualTicket($ticket) {
 
         $transScanned = Transaction::where('ticket_code',$ticket)->
-            where('tipe','individu')
+            where('tipe','individual')
             ->select(['amount','amount_scanned','status'])->first();
 
         if (!$transScanned){
@@ -133,7 +137,8 @@ class TransactionController extends BaseController
 
         if ($transScanned->status == "closed") {
             return response()->json([
-                "status" => $transScanned->status
+                "status" => $transScanned->status,
+                "count" => 0
             ]);
         }
 
@@ -163,13 +168,13 @@ class TransactionController extends BaseController
             where('tipe','group')
             ->select(['amount','amount_scanned','status'])->first();
 
-        $counting = $transScanned->amount_scanned + 1;
         if (!$transScanned){
             return response()->json([
                 "status" => "not found"
             ]);
         }
-
+        
+        
         if ($transScanned->status == "closed") {
             return response()->json([
                 "status" => $transScanned->status,
@@ -177,7 +182,8 @@ class TransactionController extends BaseController
             ]);
         }
 
-       
+        $counting = $transScanned->amount_scanned + 1;
+        
         if ($transScanned->amount == $counting) {
             Transaction::where('ticket_code',$ticket)
                 ->update([
