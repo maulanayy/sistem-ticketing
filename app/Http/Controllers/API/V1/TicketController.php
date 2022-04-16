@@ -5,7 +5,6 @@ namespace App\Http\Controllers\API\V1;
 use App\Http\Requests\TicketRequest;
 use App\Models\Ticket as ModelsTicket;
 use App\Models\Transaction;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class TicketController extends BaseController
 {
@@ -105,7 +104,6 @@ class TicketController extends BaseController
     public function printQR($id)
     {
         $ticket = Transaction::where('id',$id)
-            ->select(['ticket_code','nama_customer','created_at'])
             ->first();
 
         return view('qrCode',[

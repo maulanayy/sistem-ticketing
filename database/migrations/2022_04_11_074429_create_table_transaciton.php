@@ -13,7 +13,7 @@ class CreateTableTransaciton extends Migration
      */
     public function up()
     {
-        Schema::create('transaction', function (Blueprint $table) {
+        Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->string('nama_customer');
             $table->string('ticket_code');

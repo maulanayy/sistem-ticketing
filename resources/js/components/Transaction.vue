@@ -5,7 +5,7 @@
 
                 <div class="col-12">
 
-                    <div class="card" >
+                    <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">Transaction List</h3>
 
@@ -33,6 +33,8 @@
                                         <th>Jumlah orang</th>
                                         <th>Status</th>
                                         <th>Harga Ticket</th>
+                                        <th>Cash</th>
+                                        <th>Kembalian</th>
                                         <th>Created By</th>
                                         <th>Action</th>
                                     </tr>
@@ -47,9 +49,11 @@
                                         <td>{{transaction.amount}}</td>
                                         <td>{{transaction.status}}</td>
                                         <td>{{transaction.harga_ticket}}</td>
+                                        <td>{{transaction.cash}}</td>
+                                        <td>{{transaction.kembalian}}</td>
                                         <td>{{transaction.created_by}}</td>
-                                        <td>
-                                            <a :href="'/api/ticket/'+transaction.id+'/printQR'" >
+                                        <td>    
+                                            <a href="#" @click="downloadQR(transaction.id)">
                                                 <i class="fa fa-print blue"></i>
                                             </a>
                                         </td>
@@ -123,6 +127,20 @@
                                         readonly>
                                     <has-error :form="form" field="harga_ticket"></has-error>
                                 </div>
+                                <div class="form-group">
+                                    <label>Cash</label>
+                                    <input v-model="form.cash" type="number" name="cash" class="form-control"
+                                        :class="{ 'is-invalid': form.errors.has('cash') }"
+                                        v-on:change="countKembalian()">
+                                    <has-error :form="form" field="cash"></has-error>
+                                </div>
+                                <div class="form-group">
+                                    <label>Kembalian</label>
+                                    <input v-model="form.kembalian" type="number" name="kembalian" class="form-control"
+                                        :class="{ 'is-invalid': form.errors.has('v') }"
+                                        readonly>
+                                    <has-error :form="form" field="kembalian"></has-error>
+                                </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -149,6 +167,8 @@
                     ticket: '',
                     amount: 1,
                     harga_ticket: 0,
+                    kembalian : 0,
+                    cash : 0,
                     name: ''
                 }),
                 tickets: []
@@ -222,8 +242,31 @@
                     return x.id == this.form.ticket
                 })
                 this.form.harga_ticket = this.form.amount * ticket.harga
+            },
+            countKembalian(){
+                this.form.kembalian = this.form.cash - this.form.harga_ticket
+            },
+            downloadQR(id) {
+                let bulkFrame = $('<iframe>', {
+                    src: '/api/ticket/'+id+'/printQR',
+                    id: 'bulk-awb',
+                    name: 'bulkAWBPage',
+                }).appendTo('body');
+
+                bulkFrame.on('load', function () {
+                    this.contentWindow.onbeforeunload = function () {
+                        $('#bulk-awb').remove();
+                    }
+                    this.contentWindow.onafterprint = function () {
+                        $('#bulk-awb').remove();
+                    }
+                    this.contentWindow.focus();
+                    this.contentWindow.print();
+                });
+
+                return;
             }
-        },  
+        },
         mounted() {
             console.log('Transaction Component mounted.')
         },

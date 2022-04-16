@@ -67,6 +67,8 @@ class TransactionController extends BaseController
             'status' => 'open',
             'amount_scanned' => 0,
             'harga_ticket' => $request['harga_ticket'],
+            'kembalian' => $request['kembalian'],
+            'cash' => $request['cash'],
             'created_by' => $user->name,
         ]);
 
