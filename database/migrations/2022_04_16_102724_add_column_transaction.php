@@ -15,6 +15,7 @@ class AddColumnTransaction extends Migration
     {
         Schema::table('transactions', function (Blueprint $table) {
             //
+            $table->integer('ticket_id');
             $table->integer('kembalian');
             $table->integer('cash');
         });

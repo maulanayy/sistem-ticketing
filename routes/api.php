@@ -34,7 +34,8 @@ Route::get('transaksi/print','API\V1\TransactionController@exportExcel');
 Route::get('ticket/{ticket}/individu-check','API\V1\TransactionController@checkIndividualTicket');
 Route::get('ticket/{ticket}/group-check','API\V1\TransactionController@checkGroupTicket');
 Route::get('ticket/{id}/printQR','API\V1\TicketController@printQR');
-Route::get('ticket/{id}/group','API\V1\TicketController@detailGroup');
+Route::get('ticket/group','API\V1\TicketController@detailGroup');
+Route::get('ticket/group-last','API\V1\TicketController@detailGroupLast');
 
 Route::apiResources([
     'user' => 'API\V1\UserController',

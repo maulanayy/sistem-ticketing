@@ -17,6 +17,7 @@ Vue.prototype.$gate = new Gate(window.user);
 
 import Swal from 'sweetalert2';
 
+window.$ = window.jQuery = window.jquery = require("jquery");
 
 const Toast = Swal.mixin({
     toast: true,

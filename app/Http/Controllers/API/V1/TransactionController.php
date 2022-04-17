@@ -69,6 +69,7 @@ class TransactionController extends BaseController
             'harga_ticket' => $request['harga_ticket'],
             'kembalian' => $request['kembalian'],
             'cash' => $request['cash'],
+            'ticket_id' => $request['ticket'],
             'created_by' => $user->name,
         ]);
 

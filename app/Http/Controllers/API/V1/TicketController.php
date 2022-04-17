@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\V1;
 use App\Http\Requests\TicketRequest;
 use App\Models\Ticket as ModelsTicket;
 use App\Models\Transaction;
+use Carbon\Carbon;
 
 class TicketController extends BaseController
 {
@@ -15,7 +16,7 @@ class TicketController extends BaseController
      */
     public function __construct()
     {
-        $this->middleware('auth:api',['except' => ['detailGroup','printQR']]);
+        $this->middleware('auth:api',['except' => ['detailGroup','printQR','detailGroupLast']]);
     }
 
     /**
@@ -103,25 +104,34 @@ class TicketController extends BaseController
 
     public function printQR($id)
     {
-        $ticket = Transaction::where('id',$id)
+        $transaction = Transaction::where('id',$id)
             ->first();
 
+        $ticket = ModelsTicket::where('id',$transaction->ticket_id)
+            ->first();
+        
         return view('qrCode',[
-            'ticket' => $ticket
+            'ticket' => $transaction,
+            'ticket_detail' => $ticket
         ]);
     }
 
-    public function detailGroup($id)
+    public function detailGroup()
     {
-        $ticket = Transaction::where('ticket_code',$id)
-            ->where('tipe','group')
-            ->select(['ticket_code','amount','amount_scanned','nama_customer','created_at'])
-            ->first();
 
         // return response()->json($ticket);
-        return view('detailGroup',[
-            'ticket' => $ticket
-        ]);
+        return view('detailGroup');
+    }
+
+    public function detailGroupLast()
+    {
+        $transaction = Transaction::where('status','open')
+            ->where('tipe','group')
+            ->select(['ticket_code','amount','amount_scanned','nama_customer','updated_at'])
+            ->orderBy('updated_at', 'desc')
+            ->first();
+
+        return response()->json($transaction);
     }
 
 }
