@@ -20,7 +20,9 @@ class TransactionExport implements FromCollection
     public function collection()
     {
         $data = Transaction::whereBetween('created_at',[$this->date_start,$this->date_end])
-        ->select(['nama_customer', 'ticket_code','tipe','amount','status','harga_ticket','created_by'])->get();
+        ->select(['nama_customer', 'ticket_code','tipe','amount','status','harga_ticket','created_by','created_at'])
+        ->orderBy('created_at')
+        ->get();
 
         return $data;
     }

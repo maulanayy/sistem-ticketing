@@ -123,7 +123,11 @@ class TransactionController extends BaseController
     }
 
     public function exportExcel(Request $request) {
-        return Excel::download(new TransactionExport($request->date_start,$request->date_end), 'transaction.xlsx');
+        $dateStart = Carbon::createFromFormat('Y-m-d',$request->date_start);
+        $dateEnd = Carbon::createFromFormat('Y-m-d',$request->date_end)->addDay();
+
+
+        return Excel::download(new TransactionExport($dateStart,$dateEnd), 'transaction.xlsx');
     }
 
     public function checkIndividualTicket($ticket) {
