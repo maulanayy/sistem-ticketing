@@ -21,6 +21,6 @@ export default [
     },
     {
         path: '*',
-        component: require('./components/NotFound.vue').default
+        component: require('./components/Transaction.vue').default
     }
 ];
