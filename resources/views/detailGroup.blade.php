@@ -15,7 +15,7 @@
 </br>
 </br>
     <div id="bodyData">
-        <h1 style="font-size: 75px;margin-top:0px;margin-bottom:0px"> SELEMAT DATANG</h1>
+        <h1 style="font-size: 75px;margin-top:0px;margin-bottom:0px"> SELAMAT DATANG</h1>
         <center>
         <img src="{{ asset('/images/Logo_2.png') }}"width="1080" width="1080" alt="The Logo" class="brand-image" style="opacity: .8;text-align:center;margin-top:100px">
         </center>
@@ -38,7 +38,6 @@ $(document).ready(function () {
             url: 'group-last',
             dataType: 'json',
             success: function (data) {  
-                console.log(data)
                 const now = new Date();
                 const update = new Date(data.updated_at)
                 const between = now-update
@@ -53,7 +52,7 @@ $(document).ready(function () {
                         </br>
                         <h1>${data.amount-data.amount_scanned}</h1>
                         </br>
-                    <h1>${data.updated_at}</h1>
+                    <h1>${data.updated_at.split("T")[0]}</h1>
                     `
                     $("#bodyData").html(bodyData);
                 }else{

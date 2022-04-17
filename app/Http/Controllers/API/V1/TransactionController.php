@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\API\V1;
 
+use Illuminate\Http\Request;
 use App\Exports\TransactionExport;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\TransactionRequest;
-use App\Models\Ticket;
 use App\Models\Transaction;
 use App\Models\User;
 use Carbon\Carbon;
@@ -122,8 +122,8 @@ class TransactionController extends BaseController
         return $this->sendResponse($transactions, 'Transactions list');
     }
 
-    public function exportExcel() {
-        return Excel::download(new TransactionExport, 'transaction.xlsx');
+    public function exportExcel(Request $request) {
+        return Excel::download(new TransactionExport($request->date_start,$request->date_end), 'transaction.xlsx');
     }
 
     public function checkIndividualTicket($ticket) {

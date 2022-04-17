@@ -15,10 +15,10 @@
                                     <i class="fa fa-plus-square"></i>
                                     Add New
                                 </button>
-                                <a href="api/transaksi/print" class="btn btn-sm btn-primary">
+                                <button type="button" class="btn btn-sm btn-primary" @click="newModalExport">
                                     <i class="fa fa-plus-square"></i>
                                     Export CSV
-                                </a>
+                                </button>
                             </div>
                         </div>
                         <!-- /.card-header -->
@@ -52,7 +52,7 @@
                                         <td>{{transaction.cash}}</td>
                                         <td>{{transaction.kembalian}}</td>
                                         <td>{{transaction.created_by}}</td>
-                                        <td>    
+                                        <td>
                                             <a href="#" @click="downloadQR(transaction.id)">
                                                 <i class="fa fa-print blue"></i>
                                             </a>
@@ -137,8 +137,7 @@
                                 <div class="form-group">
                                     <label>Kembalian</label>
                                     <input v-model="form.kembalian" type="number" name="kembalian" class="form-control"
-                                        :class="{ 'is-invalid': form.errors.has('v') }"
-                                        readonly>
+                                        :class="{ 'is-invalid': form.errors.has('v') }" readonly>
                                     <has-error :form="form" field="kembalian"></has-error>
                                 </div>
                             </div>
@@ -148,6 +147,36 @@
                                 <button v-show="!editmode" type="submit" class="btn btn-primary">Create</button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="addNewExport" tabindex="-1" role="dialog" aria-labelledby="addNew"
+                aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Export Transaksi</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>Date Start</label>
+                                <input v-model="date_start" type="date" name="date_start" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Date End</label>
+                                <input v-model="date_end" type="date" name="date_end" class="form-control">
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <a :href="'api/transaksi/print?date_start='+date_start+'&date_end='+date_end" class="btn btn-success">Export</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -167,10 +196,13 @@
                     ticket: '',
                     amount: 1,
                     harga_ticket: 0,
-                    kembalian : 0,
-                    cash : 0,
-                    name: ''
+                    kembalian: 0,
+                    cash: 0,
+                    name: '',
+                    
                 }),
+                date_start: '',
+                    date_end: '',
                 tickets: []
             }
         },
@@ -197,7 +229,9 @@
                 this.form.reset();
                 $('#addNew').modal('show');
             },
-
+            newModalExport() {
+                $('#addNewExport').modal('show');
+            },
             loadTransactions() {
                 this.$Progress.start();
 
@@ -207,7 +241,6 @@
 
                 this.$Progress.finish();
             },
-
             createTransaction() {
 
                 this.form.post('api/transaction')
@@ -231,7 +264,6 @@
                         });
                     })
             },
-
             loadTicket() {
                 axios.get("api/ticket/code").then(({
                     data
@@ -243,12 +275,12 @@
                 })
                 this.form.harga_ticket = this.form.amount * ticket.harga
             },
-            countKembalian(){
+            countKembalian() {
                 this.form.kembalian = this.form.cash - this.form.harga_ticket
             },
             downloadQR(id) {
                 let bulkFrame = $('<iframe>', {
-                    src: '/api/ticket/'+id+'/printQR',
+                    src: '/api/ticket/' + id + '/printQR',
                     id: 'bulk-awb',
                     name: 'bulkAWBPage',
                 }).appendTo('body');
@@ -265,7 +297,23 @@
                 });
 
                 return;
-            }
+            },
+            // exportCSV() {
+
+                // axios.post('api/transaksi/print', {
+                //     date_start: this.date_start,
+                //     date_end: this.date_end
+                // }).then((response) => {
+                //     const url = window.URL.createObjectURL(new Blob([response]));
+                //     const link = document.createElement("a");
+                //     link.href = url;
+                //     link.setAttribute("download", `download.xlsx`);
+                //     document.body.appendChild(link);
+                //     link.click();
+                // });
+
+                // return;
+            // }
         },
         mounted() {
             console.log('Transaction Component mounted.')
